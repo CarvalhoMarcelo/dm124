@@ -17,10 +17,11 @@ module.exports = {
 
     async update(req, res) {        
         const {name, breed, age} = req.body; 
+        const petUpdate = {breed, age};
 
         try {
-            const petCreated = await Pet.create({name, breed, age})
-            return res.status(201).json(petCreated);
+            await Pet.findOneAndUpdate({name}, petUpdate, {new: true});
+            return res.status(202).json(petUpdate);
         } catch (err) {
             return res.status(400).json({
                 status: "Bad request",
@@ -29,13 +30,18 @@ module.exports = {
         }       
     },
 
-
     async delete(req, res) {        
-        const {name} = req.body; 
+        const {name} = req.params; 
+
+        const petExist = await Pet.findOne({ name }); 
+
+        if(!petExist) {
+            return res.status(404).json({name});
+        }
 
         try {
-            const petName = await Pet.delete({name});
-            return res.status(204).json(`{${petName} deleted`);
+            const petName = await Pet.deleteOne({name});
+            return res.status(204).json(`{${name} deleted`);
         } catch (err) {
             return res.status(400).json({
                 status: "Bad request",
@@ -72,18 +78,7 @@ module.exports = {
         }
 
         next();
-    },
-
-    async validateDelete(req, res, next) {        
-        const { name } = req.body;
-
-        const petExist = await Pet.findOne({ name }); 
-
-        if(!petExist) {
-            return res.status(404).json({name});
-        }
-
-        next();
     }
+
 
 };
