@@ -12,7 +12,7 @@ const petRouter = express.Router();
 
 rootRouter.use('/pet', petRouter);
 
-petRouter.post('/', PetController.insert);
+petRouter.post('/', PetController.validate, PetController.insert);
 petRouter.get('/', PetController.search);
 
 module.exports = rootRouter;
