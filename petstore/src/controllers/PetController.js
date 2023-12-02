@@ -2,7 +2,7 @@ const Pet = require('../models/Pet');
 
 module.exports = {
     async insert(req, res) {        
-        const {name, breed, age} = req.body; // variable have the same name then the body fields
+        const {name, breed, age} = req.body; 
 
         try {
             const petCreated = await Pet.create({name, breed, age})
@@ -14,6 +14,35 @@ module.exports = {
             });
         }       
     },
+
+    async update(req, res) {        
+        const {name, breed, age} = req.body; 
+
+        try {
+            const petCreated = await Pet.create({name, breed, age})
+            return res.status(201).json(petCreated);
+        } catch (err) {
+            return res.status(400).json({
+                status: "Bad request",
+                erro: err
+            });
+        }       
+    },
+
+
+    async delete(req, res) {        
+        const {name} = req.body; 
+
+        try {
+            const petName = await Pet.delete({name});
+            return res.status(204).json(`{${petName} deleted`);
+        } catch (err) {
+            return res.status(400).json({
+                status: "Bad request",
+                erro: err
+            });
+        }       
+    },    
 
     async search(req, res) {
         // GET localhost:3000/pet
@@ -36,12 +65,25 @@ module.exports = {
     async validate(req, res, next) {        
         const { name } = req.body;
 
-        const petExist = await Pet.findOne({ name }); // if value and field have the same I do not need to use the variable : value (name : name)
+        const petExist = await Pet.findOne({ name }); 
 
         if(petExist) {
             return res.status(200).json(petExist);
         }
 
         next();
+    },
+
+    async validateDelete(req, res, next) {        
+        const { name } = req.body;
+
+        const petExist = await Pet.findOne({ name }); 
+
+        if(!petExist) {
+            return res.status(404).json({name});
+        }
+
+        next();
     }
+
 };
