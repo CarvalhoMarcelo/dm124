@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mongo-db:
+    image: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    networks:
+      - services-network
+    #healthcheck:
+  petstore:
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./petstore
+    ports:
+      - "3000:3000"
+    networks:
+      - services-network
+    depends_on:
+      - mongo-db
+        #- service_healthy
+    environment:
+      - PORT=3000
+      - MONGODB_HOST=mongo-db
+      - MONGODB_PORT=27017
+      - MONGODB_DBNAME=petstore
+networks:
+  services-network:
+    driver: bridge
