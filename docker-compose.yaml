@@ -4,11 +4,26 @@ services:
   mongo-db:
     image: mongo
     restart: unless-stopped
+    command:
+      - '--logpath'
+      - '/var/log/mongodb/mongodb.log' 
     ports:
       - "27017:27017"
     networks:
       - services-network
     #healthcheck:
+  auth:  
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./auth
+    ports:
+      - "3001:3001"
+    networks:
+      - services-network
+    environment:
+      - PORT=3001
+      - PRIVATE_KEY=longKeyToDificultDecodingThisPassword
+      - EXP_TIME=1d
   petstore:
     build: 
       dockerfile: ./Dockerfile
@@ -19,12 +34,14 @@ services:
       - services-network
     depends_on:
       - mongo-db
+      - auth
         #- service_healthy
     environment:
       - PORT=3000
       - MONGODB_HOST=mongo-db
       - MONGODB_PORT=27017
       - MONGODB_DBNAME=petstore
+      - AUTH_SERVER=http://auth:3001
 networks:
   services-network:
     driver: bridge

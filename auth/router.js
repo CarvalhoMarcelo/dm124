@@ -1,6 +1,6 @@
 const express = require('express');
 const rootRouter = express.Router();
-const AuthController = require('./src/controllers/AuthController');
+const JwtController = require('./src/controllers/JwtController');
 
 rootRouter.get('/', (req, res) => {
     res.status(200).json({
@@ -8,11 +8,11 @@ rootRouter.get('/', (req, res) => {
     });
 });
 
-const authRouter = express.Router();
+const jwtRouter = express.Router();
 
-rootRouter.use('/auth', authRouter);
+rootRouter.use('/auth', jwtRouter);
 
-authRouter.post('/login', AuthController.login);
-authRouter.post('/validateToken', AuthController.checkJWT);
+jwtRouter.post('/login', JwtController.login);
+jwtRouter.post('/validateToken', JwtController.checkJWT);
 
 module.exports = rootRouter;
