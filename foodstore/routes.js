@@ -15,7 +15,7 @@ rootRouter.use(`/food`, AuthController.checkJWT, foodRouter);
 
 foodRouter.post('/', FoodController.validate, FoodController.insert);
 foodRouter.get('/', FoodController.search);
-foodRouter.put('/', FoodController.update);
+foodRouter.patch('/:foodName/:bagSize', FoodController.update);
 foodRouter.delete('/:foodName/:bagSize', FoodController.delete);
 
 module.exports = rootRouter;

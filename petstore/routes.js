@@ -5,7 +5,7 @@ const AuthController = require('./src/controllers/AuthController');
 
 rootRouter.get('/', (req, res) => {
     res.status(200).json({
-        msg: "Hello world - GET"
+        msg: "Hello Pet!"
     });
 });
 
@@ -15,7 +15,7 @@ rootRouter.use(`/pet`, AuthController.checkJWT, petRouter);
 
 petRouter.post('/', PetController.validate, PetController.insert);
 petRouter.get('/', PetController.search);
-petRouter.put('/', PetController.update);
+petRouter.patch('/:name', PetController.update);
 petRouter.delete('/:name', PetController.delete);
 
 module.exports = rootRouter;

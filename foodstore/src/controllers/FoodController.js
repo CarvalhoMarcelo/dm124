@@ -16,11 +16,11 @@ module.exports = {
     },
 
     async update(req, res) {        
-        const {foodName, kindOfPet, bagSize, price} = req.body; 
-        const foodUpdate = {kindOfPet, price};
+        const {foodName, bagSize} = req.params;               
+        const {kindOfPet, price} = req.body;
 
         try {
-            await Food.findOneAndUpdate({foodName, bagSize}, foodUpdate, {new: true});
+            const foodUpdate = await Food.findOneAndUpdate({foodName, bagSize}, {kindOfPet, price}, {new: true});
             return res.status(202).json(foodUpdate);
         } catch (err) {
             return res.status(400).json({

@@ -16,11 +16,11 @@ module.exports = {
     },
 
     async update(req, res) {        
-        const {name, breed, age} = req.body; 
-        const petUpdate = {breed, age};
+        const { name } = req.params; 
+        const {breed, age} = req.body;
 
         try {
-            await Pet.findOneAndUpdate({name}, petUpdate, {new: true});
+            const petUpdate = await Pet.findOneAndUpdate({name}, { breed, age }, {new: true});
             return res.status(202).json(petUpdate);
         } catch (err) {
             return res.status(400).json({

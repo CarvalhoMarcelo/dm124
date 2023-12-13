@@ -2,77 +2,53 @@
 
 **Operational System:**
 
-- Windows 11
-- WSL2 - Kali Linux 2023.3
+- *Windows 11*
+- *WSL2 - Kali Linux 2023.3*
 
 ---
 
 **Technologies:**
 
-- Visual Studio Code 2023 1.82.2
-- Postman 10.17.04
-- NPM 9.2.0
-- NodeJS 18.13.0
+- *Visual Studio Code 2023 1.82.2 (optional)*
+- *Postman 10.17.04 (optional)*
+- *NPM 9.2.0 (mandatory install)*
+- *NodeJS 18.13.0 (mandatory install)*
+- *Docker Engine Community 24.0.7 (mandatory install)*
 
 ---
 
-
 **How to run:**
 
-1. Clone the repository into a single folder to not have path problems. Ex.: 'C:\dm110' or '/home/dm110'
-2. Go to the folder that you used to clone, for example, C:\dm110\trabalho-dm110, open a terminal or command prompt on it, and type:
-   - `mvn clean install`
-3. Go to the folder that you used to unpack/unzip the HyperSLQ(HSQLDB), open a command prompt or terminal on it, go to the `/lib` folder, and type the command below:
-   - `java -jar hsqldb.jar` 
-   - When the HyperSQL IDE pops up, use the below configuration:
-     - Setting Name: "DM110"
-     - Type: HSQL Database Engine Standalone
-     - Driver: org.hsqldb.jdbc.JDBCDriver
-     - URL: jdbc:hsqldb:file:C:\dm110\product.db (change for the correct path that you want to use)
-     - User: dm110 (You must use exactly this one unless you know what you are doing and how to change it in the next commands below)
-     - Password: senhadm110 (same comment as above)
-- In the available command blank area, type/copy the below script to create the mandatory tables and click on `ExecuteSQL` button:
-  - Obs: The below scripts are also available inside the folder `docs` in your cloned project folder.
-```
-CREATE TABLE PRODUCT (
-CODE INTEGER NOT NULL,
-NAME VARCHAR(30) NOT NULL,
-DESCRIPTION VARCHAR(100) NOT NULL,
-CATEGORY VARCHAR(30) NOT NULL,
-PRICE DOUBLE NOT NULL,
-PRIMARY KEY (CODE)
-);
-```
-```
-CREATE TABLE AUDITING (
-IDENTIFIER INTEGER NOT NULL,
-REGISTERFROM VARCHAR(30) NOT NULL,
-REGISTERCODE VARCHAR(30) NOT NULL,
-OPERATION VARCHAR(30) NOT NULL,
-DATETIME TIMESTAMP NOT NULL,
-PRIMARY KEY (IDENTIFIER)
-);
-```
-*** After the two scripts ran successfully, you can close the HyperSQL IDE.
+1. Clone the repository into a single folder to not have path problems. Ex.: `'C:\dm124'` or `'/home/dm124'`
 
-- Obs1.: For the next commands below, for bash terminals use `.sh` files, and for windows command prompt use `.bat` files
-- Obs2.: Be careful on copy and pasting. Some prompts or terminals can behavior different. Be sure that you type things correctly.
-4. Open a terminal or command prompt at the folder where you unpack/unzip the WildFly, go to the `/bin` folder, and type:  
-   - `./standalone.sh -c=standalone-full.xml` or `standalone.bat -c=standalone-full.xml` 
-5. Open another terminal or command prompt at the folder where you unpack/unzip the WildFly, go to the `/bin` folder, and type the below commands in the presented order after each one is completed successfully. No error should be shown before you execute the next command. Remember to use ".sh" or .".bat" according to your system. Also, remember to change and put the correct PATH where you install your technologies.
-- `./jboss-cli.sh --connect --command="module add --name=br.inatel.dm110.org.hsqldb --dependencies=javax.transaction.api --export-dependencies=javax.api --resources=C:\dm110\hsqldb\lib\hsqldb.jar"` (chage to the correct path where you put your HSQLDB)
-- `./jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=HSQLDBDriver:add(driver-name=HSQLDBDriver,driver-module-name=br.inatel.dm110.org.hsqldb,driver-class-name=org.hsqldb.jdbc.JDBCDriver)"`
-- `./jboss-cli.sh --connect --command="data-source add --jndi-name=java:/ProductDS --name=ProductDS --connection-url=jdbc:hsqldb:file:C:\dm110\product.db --driver-name=HSQLDBDriver --password=senhadm110 --user-name=dm110"` (change to the correct path where you put your product.db)
-- `./jboss-cli.sh --connect --command="jms-queue add --queue-address=ProductQueue --durable=true --entries=[java:/jms/queue/ProductQueue]"` 
-- `./jboss-cli.sh --connect --command="deploy --force C:\dm110\trabalho-dm110\trabalho-ear\target\trabalho-ear-1.0.ear"` (change to the correct path where you clone the repository. Check if the EAR file is into the `\trabalho-ear\target` folder)
+2. Ways to run:
+   - The easiest way is through docker-compose file. Go to the folder that you used to clone the repository, for example, C:\dm124, open a terminal or command prompt on it, and type:
+      - `docker compose up --build`
 
-6. Use an API Client like Postman to perform the tasks and call the provided endpoints. 
+      </br>      
+   - Locally, running service by service
+      - Run the below command to bring up the mongodb service
+         - `docker run --name mongodb -p 27017:27017 -d mongo`
+      - In each project folder execute the command `npm run dev` (Ex.: C:\dm124\auth, C:\dm124\petstore, C:\dm124\foodstore)
+      
+      </br>      
+   - Using Dockerfile and running service by service
+      - First thing, run the below commands to create a network and bring up the mongodb service
+         - `docker network create network1`
+         - `docker run --name mongodb -p 27017:27017 --network network1 -d mongo`
+      - In each project folder execute the command that corresponding to each project.
+         - `docker run --name auth -p 3001:3001 --network network1 -d <yournamne>/auth` (Obs.:\<yourname>/auth = Ex.: marcelo/auth)
+         - `docker run --name petstore -p 3000:3000 --network network1 --env MONGODB_HOST=mongodb AUTH_SERVER=http://auth:3001 -d <yournamne>/petstore` (Obs.:\<yourname>/petstore = Ex.: marcelo/petstore)
+         - `docker run --name foodstore -p 3002:3002 --network network1 --env MONGODB_HOST=mongodb AUTH_SERVER=http://auth:3001 -d <yournamne>/foodstore` (Obs.:\<yourname>/foodstore = Ex.: marcelo/foodstore)
+
+
+3. Use an API Client like Postman to perform the tasks and call the provided endpoints. 
 
 ---
 
 **Payload:**
 
-In the folder `docs` there is a file `DM110.postman_collection.json` that you can use to import to your preferred API platform or tool (I've used Postman for this project), so you will have all the endpoints ready and configured to use and test the APIs.
+In the folder `docs` there is a file `DM124.postman_collection.json` that you can use to import to your preferred API platform or tool (I've used Postman for this project), so you will have all the endpoints ready and configured to use and test the APIs.
 
 ---
 
@@ -81,24 +57,24 @@ In the folder `docs` there is a file `DM110.postman_collection.json` that you ca
 If you decide to not import the Postman configured collection that I have exported, below are the endpoints to be used to test the API.
 
 ```
---- PRODUCT ---
-(POST)   http://localhost:8080/trabalho-web/api/product             (create product)
-(PUT)    http://localhost:8080/trabalho-web/api/product/code/1      (update product)
-(DELETE) http://localhost:8080/trabalho-web/api/product/code/1      (delete product by id)
-(GET)    http://localhost:8080/trabalho-web/api/products            (get all products)
-(GET)    http://localhost:8080/trabalho-web/api/product/code/1      (get product by id)
-(GET)    http://localhost:8080/trabalho-web/api/product/name/Laptop (get product by name)
+--- PetStore Service ---
+(POST)   http://localhost:3000/pet                   (create pet)
+(PATCH)  http://localhost:3000/pet/caramelo1         (update pet)
+(DELETE) http://localhost:3000/pet/caramelo2         (delete pet by name)
+(GET)    http://localhost:3000/pet                   (get all pets)
+(GET)    http://localhost:3000/pet/?name=caramelo2   (get pet by name)
 
---- AUDITING ---
-(GET) http://localhost:8080/trabalho-web/api/auditing               (get all auditing)
-(GET) http://localhost:8080/trabalho-web/api/auditing/productCode/1 (get auditing by product code)
+--- FoodStore Service ---
+(POST)   http://localhost:3002/food                                      (create food)
+(PATCH)  http://localhost:3002/food/Fresh fish/Medium                    (update food)
+(DELETE) http://localhost:3002/food/Fresh fish/Old                       (delete food by name & bag size)
+(GET)    http://localhost:3002/food                                      (get all food)
+(GET)    http://localhost:3002/food/?foodName=Fresh fish&bagSize=Large   (get fod by name & bag size)
+
+--- Auth Service ---
+(POST) http://localhost:3001/auth/login           (generate token based on user and password)
+(POST) http://localhost:3001/auth/validateToken   (validate if the token used is a valid token)
 ```
 
 ---
-
-**Diagram**
-
-The PDF version of this diagram is available in the folder `docs` of the cloned repository.
-
-![alt text](https://github.com/CarvalhoMarcelo/trabalho-dm110/blob/master/docs/diagrama_dm110.png)
 
