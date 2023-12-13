@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  mongo-db:
+  mongo-db-petstore:
     image: mongo
     restart: unless-stopped
     command:
@@ -11,7 +11,16 @@ services:
       - "27017:27017"
     networks:
       - services-network
-    #healthcheck:
+  mongo-db-foodstore:
+    image: mongo
+    restart: unless-stopped
+    command:
+      - '--logpath'
+      - '/var/log/mongodb/mongodb.log' 
+    ports:
+      - "27018:27018"
+    networks:
+      - services-network      
   auth:  
     build: 
       dockerfile: ./Dockerfile
@@ -33,15 +42,31 @@ services:
     networks:
       - services-network
     depends_on:
-      - mongo-db
+      - mongo-db-petstore
       - auth
-        #- service_healthy
     environment:
       - PORT=3000
-      - MONGODB_HOST=mongo-db
+      - MONGODB_HOST=mongo-db-petstore
       - MONGODB_PORT=27017
       - MONGODB_DBNAME=petstore
       - AUTH_SERVER=http://auth:3001
+  foodstore:
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./foodstore
+    ports:
+      - "3002:3002"
+    networks:
+      - services-network
+    depends_on:
+      - mongo-db-foodstore
+      - auth
+    environment:
+      - PORT=3002
+      - MONGODB_HOST=mongo-db-foodstore
+      - MONGODB_PORT=27017
+      - MONGODB_DBNAME=foodstore
+      - AUTH_SERVER=http://auth:3001      
 networks:
   services-network:
     driver: bridge

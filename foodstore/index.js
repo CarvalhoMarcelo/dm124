@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(routes);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3002;
 
 mongoose.connect(DB.DB_URL, DB.DB_SETTINGS)
     .then(() => console.log(`MongoDB database connected to ${DB.DB_URL}`))

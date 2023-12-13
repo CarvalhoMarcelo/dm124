@@ -27,7 +27,7 @@ module.exports = {
             })
             .catch((error) => {
                 console.log(`Invalid token on AuthController!`);
-                return res.status(error.response.status).json({error});
+                return res.status(error.response.status).json({auth: error.response.data});
             });
     }
 }

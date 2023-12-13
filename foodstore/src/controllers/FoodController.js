@@ -2,10 +2,10 @@ const Food = require('../models/Food');
 
 module.exports = {
     async insert(req, res) {        
-        const {name, bagSize, price} = req.body; 
+        const {foodName, kindOfPet, bagSize, price} = req.body; 
 
         try {
-            const foodCreated = await Food.create({name, bagSize, price})
+            const foodCreated = await Food.create({foodName, kindOfPet, bagSize, price})
             return res.status(201).json(foodCreated);
         } catch (err) {
             return res.status(400).json({
@@ -16,11 +16,11 @@ module.exports = {
     },
 
     async update(req, res) {        
-        const {name, bagSize, price} = req.body; 
-        const foodUpdate = {bagSize, price};
+        const {foodName, kindOfPet, bagSize, price} = req.body; 
+        const foodUpdate = {kindOfPet, price};
 
         try {
-            await Food.findOneAndUpdate({name}, foodUpdate, {new: true});
+            await Food.findOneAndUpdate({foodName, bagSize}, foodUpdate, {new: true});
             return res.status(202).json(foodUpdate);
         } catch (err) {
             return res.status(400).json({
@@ -31,17 +31,17 @@ module.exports = {
     },
 
     async delete(req, res) {        
-        const {name} = req.params; 
+        const { foodName, bagSize} = req.params;
 
-        const foodExist = await Food.findOne({ name }); 
+        const foodExist = await Food.findOne({ foodName, bagSize }); 
 
         if(!foodExist) {
-            return res.status(404).json({name});
+            return res.status(404).json({foodName, bagSize});
         }
 
         try {
-            const foodName = await Food.deleteOne({name});
-            return res.status(204).json(`{${name} deleted`);
+            const food = await Food.deleteOne({foodName, bagSize});
+            return res.status(204).json(`{${food} deleted`);
         } catch (err) {
             return res.status(400).json({
                 status: "Bad request",
@@ -51,11 +51,11 @@ module.exports = {
     },    
 
     async search(req, res) {
-        const { name } = req.query;
+        const { foodName, bagSize} = req.query;
         let food = [];
 
-        if(name){
-            food = await Food.find({name});
+        if(foodName){
+            food = await Food.find({foodName, bagSize});
         } else {
             food = await Food.find();
         }
@@ -66,9 +66,9 @@ module.exports = {
     },
     
     async validate(req, res, next) {        
-        const { name } = req.body;
+        const { foodName, bagSize } = req.body;
 
-        const foodExist = await Food.findOne({ name }); 
+        const foodExist = await Food.findOne({ foodName, bagSize }); 
 
         if(foodExist) {
             return res.status(200).json(foodExist);
