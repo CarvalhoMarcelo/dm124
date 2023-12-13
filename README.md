@@ -22,6 +22,7 @@
 1. Clone the repository into a single folder to not have path problems. Ex.: `'C:\dm124'` or `'/home/dm124'`
 
 2. Ways to run:
+
    - The easiest way is through docker-compose file. Go to the folder that you used to clone the repository, for example, C:\dm124, open a terminal or command prompt on it, and type:
       - `docker compose up --build`
 
