@@ -31,6 +31,7 @@ services:
       - services-network
     environment:
       - PORT=3001
+      - NODE_ENV=prod
       - PRIVATE_KEY=longKeyToDificultDecodingThisPassword
       - EXP_TIME=1d
   petstore:
@@ -46,6 +47,7 @@ services:
       - auth
     environment:
       - PORT=3000
+      - NODE_ENV=prod
       - MONGODB_HOST=mongo-db-petstore
       - MONGODB_PORT=27017
       - MONGODB_DBNAME=petstore
@@ -63,6 +65,7 @@ services:
       - auth
     environment:
       - PORT=3002
+      - NODE_ENV=prod
       - MONGODB_HOST=mongo-db-foodstore
       - MONGODB_PORT=27017
       - MONGODB_DBNAME=foodstore
